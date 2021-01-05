@@ -108,3 +108,60 @@ About_common_parameters
 3.7. Accessing online help
 Help Get-EventLog -online
 
+3.8 Lab
+NOTE For this lab, you’ll need any computer running PowerShell v3.
+We hope this chapter has conveyed the importance of mastering the help system in
+PowerShell. Now it’s time to hone your skills by completing the following tasks. Keep
+in mind that sample answers can be found on MoreLunches.com. Look for italicized
+words in these tasks, and use them as clues to complete that task.
+1 First, run Update-Help and ensure it completes without errors. That will get a
+copy of the help on your local computer. You’ll need an internet connection,
+and the shell needs to run under elevated privileges (which means it must say
+“Administrator” in the shell window’s title bar).
+2 Can you find any cmdlets capable of converting other cmdlets’ output into
+HTML?
+3 Are there any cmdlets that can redirect output into a file, or to a printer?
+4 How many cmdlets are available for working with processes? (Hint: remember
+that cmdlets all use a singular noun.)
+5 What cmdlet might you use to write to an event log?
+6 You’ve learned that aliases are nicknames for cmdlets; what cmdlets are available to create, modify, export, or import aliases?
+7 Is there a way to keep a transcript of everything you type in the shell, and save
+that transcript to a text file?
+8 It can take a long time to retrieve all of the entries from the Security event log.
+How can you get only the 100 most recent entries?
+9 Is there a way to retrieve a list of the services that are installed on a remote
+computer?
+10 Is there a way to see what processes are running on a remote computer?
+11 Examine the help file for the Out-File cmdlet. The files created by this cmdlet
+default to a width of how many characters? Is there a parameter that would
+enable you to change that width?
+12 By default, Out-File will overwrite any existing file that has the same filename
+as what you specify. Is there a parameter that would prevent the cmdlet from
+overwriting an existing file?
+13 How could you see a list of all aliases defined in PowerShell?
+14 Using both an alias and abbreviated parameter names, what is the shortest command line you could type to retrieve a list of running processes from a computer named Server1?
+15 How many cmdlets are available that can deal with generic objects? (Hint:
+remember to use a singular noun like “object” rather than a plural one like
+“objects”.)
+16 This chapter briefly
+
+3.9 Lab answers
+1. Update-help
+Or if you run it more than once in a single day: Update-Help -force
+2. help html Or you could try with Get-Command: get-command -noun html
+3. get-command -noun file, printer
+4. get-command -noun process or Help *Process
+5. Get-command -noun process or Help *Process
+5. get-command -verb write -noun eventlog
+Or if you aren't sure about the noun, use wildcard: help *log
+6. help *alias or get-command -noun alias
+7. help transcript
+8. help Get-Eventlog -parameter Newst
+9. help Get-Service -parameter computername
+10. help Get-Process -parameter computername
+11. Help Out-File -full or Help Out-File -parameter Width, should show you 80 characters as the default for the PowerShell console. You would use this parameter to change it as well.
+12. If you run Help Out-File -full and loook at parameters, you should see -NoCobber.
+13. Get-Alias
+14. ps -c server1
+15. get-command -noun object
+16. help about_arrays Or you could use wildcards: help *array

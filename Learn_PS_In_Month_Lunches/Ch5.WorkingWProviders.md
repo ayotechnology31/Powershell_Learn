@@ -119,4 +119,180 @@ When you want * and ? taken literally, you use -LiteralPath instead of the -Path
 parameter. Note that -LiteralPath isn’t positional; if you plan to use it, you have to
 type -LiteralPath. 
 
+
 5.6 Working with other providers
+One of the best ways to get a feel for these other providers, and how the various “item”
+cmdlets work, is to play with a PSDrive that isn’t the filesystem. Of the providers built
+into PowerShell, the registry is probably the best example to work with (in part
+because it’s available on every system). Our goal is to turn off the “Aero Peek” feature
+in Windows.
+ Start by changing to the HKEY_CURRENT_USER portion of the registry, exposed by
+the HKCU: drive:
+PS C:\> set-location -Path hkcu:
+Next, navigate to the right portion of the registry:
+PS HKCU:\> set-location -Path software
+PS HKCU:\software> get-childitem
+ Hive: HKEY_CURRENT_USER\software
+Name Property
+---- --------
+AppDataLow
+clients
+Microsoft
+Mine (default) : {}
+Parallels
+Policies
+PS HKCU:\software> set-location microsoft
+PS HKCU:\software\microsoft> Get-ChildItem
+ Hive: HKEY_CURRENT_USER\software\microsoft
+Name Property
+---- --------
+.NETFramework
+Active Setup
+Advanced INF Setup
+Assistance
+AuthCookies
+Command Processor PathCompletionChar : 9
+ EnableExtensions : 1
+ CompletionChar : 9
+ DefaultColor : 0
+CTF
+EventSystem
+Fax
+Feeds SyncTask : User_Feed_Synchronization-{28B6
+ C75-A5AB-40F7-8BCF-DC87CA308D51
+ }
+FTP Use PASV : yes
+IdentityCRL UpdateDone : 1
+Immersive Browser
+Internet Connection Wizard Completed : 1
+Internet Explorer
+Keyboard
+
+MediaPlayer
+Microsoft Management Console
+MSF
+PeerNet
+RAS AutoDial
+Remote Assistance
+Speech
+SQMClient UserId :
+ {73C1117E-B151-4C82-BA8D-BFF6134D1E10}
+SystemCertificates
+TabletTip
+WAB
+wfs
+Windows
+Windows Mail Setup DelayStartTime : {186, 248, 138, 82...}
+ DelayInitialized : 2
+Windows Media
+Windows NT
+Windows Script
+Windows Script Host
+Windows Search
+Windows Sidebar
+Wisp
+You’re almost finished. You’ll notice that we’re sticking with full cmdlet names rather
+than using aliases to emphasize the cmdlets themselves:
+PS HKCU:\software\microsoft> Set-Location .\Windows
+PS HKCU:\software\microsoft\Windows> Get-ChildItem
+ Hive: HKEY_CURRENT_USER\software\microsoft\Windows
+Name Property
+---- --------
+CurrentVersion
+DWM Composition : 1
+ EnableAeroPeek : 1
+ AlwaysHibernateThumbnails : 0
+ ColorizationColor :
+ 3226847725
+ ColorizationColorBalance : 72
+ ColorizationAfterglow :
+ 3226847725
+ ColorizationAfterglowBalance : 0
+ ColorizationBlurBalance : 28
+ ColorizationGlassReflectionIntensity : 50
+ ColorizationOpaqueBlend : 0
+ ColorizationGlassAttribute : 0
+Roaming
+Shell
+TabletPC
+Windows Error Reporting Disabled : 0
+ MaxQueueCount : 50
+ DisableQueue : 0
+ LoggingDisabled : 0
+ DontSendAdditionalData : 0
+ ForceQueue : 0
+  DontShowUI : 0
+  ConfigureArchive : 1
+  MaxArchiveCount : 500
+  DisableArchive : 0
+  LastQueuePesterTime : 129773462733828600
+ Note the EnableAeroPeek registry value. Let’s change it to 0:
+ PS HKCU:\software\microsoft\Windows> Set-ItemProperty -Path dwm -PSPropert
+  EnableAeroPeek -Value 0
+ Let’s check it again to make sure the change “took”:
+ PS HKCU:\software\microsoft\Windows> Get-ChildItem
+  Hive: HKEY_CURRENT_USER\software\microsoft\Windows
+ Name Property
+ ---- --------
+ CurrentVersion
+ DWM Composition : 1
+  EnableAeroPeek : 0
+  AlwaysHibernateThumbnails : 0
+  ColorizationColor :
+  3226847725
+  ColorizationColorBalance : 72
+  ColorizationAfterglow :
+  3226847725
+  ColorizationAfterglowBalance : 0
+  ColorizationBlurBalance : 28
+  ColorizationGlassReflectionIntensity : 50
+  ColorizationOpaqueBlend : 0
+  ColorizationGlassAttribute : 0
+ Roaming
+ Shell
+ TabletPC
+ Windows Error Reporting Disabled : 0
+  MaxQueueCount : 50
+  DisableQueue : 0
+  LoggingDisabled : 0
+  DontSendAdditionalData : 0
+  ForceQueue : 0
+  DontShowUI : 0
+  ConfigureArchive : 1
+  MaxArchiveCount : 500
+  DisableArchive : 0
+  LastQueuePesterTime : 129773462733828600
+ Mission accomplished! Using these same techniques, you should be able to work with
+ any provider that comes your way.
+ 
+ 
+
+5.7 Lab
+NOTE For this lab, you’ll need any computer running PowerShell v3.
+Complete the following tasks:
+1 In the registry, go to HKEY_CURRENT_USER\software\microsoft\Windows\
+currentversion\explorer. Locate the Advanced key, and set its DontPrettyPath
+property to 1.
+    cd HKCU:\software\microsoft\Windows\currentversion\explorer
+    cd advanced
+    Set-ItemProperty -Path . Name DontPrettyPath -Value 1
+    
+    
+2 Create a new directory called C:\Labs
+    mkdir c:\labs
+    or the New-Item cmdlet:
+    new-item =path C:\Labs -ItemType Directory
+    
+3 Create a zero-length file named C:\Test.txt (use New-Item).
+New-Item -path c:\labs -Name test.txt -ItemType file
+    
+4 Is it possible to use Set-Item to change the contents of C:\Test.txt to TESTING?
+Or do you get an error? If you get an error, why?
+    The filesysterm provider doesn't support this action. 
+    
+5 Using Environment provider, display the value of the system environment variable %TEMP%
+    Either of these commands works: Get-item env:temp OR Dir env:temp
+    
+6 What are the differences between the -Filter, -Include, and -Exclude parameters of Get-ChildItem?
+    Include and Exclude must be used with -Recurse or if querying a container. Filter uses the PS Provider's filter capability, which not all providers support. For example, you could use DIR -filter in the file system but not in the Register -although you could use DIR -include inthe Registry to achieve almost the same type of filtering result
+

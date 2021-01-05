@@ -220,5 +220,3 @@ with modules and snap-ins: they don’t read the help. Specifically, they don’
  Frankly, looking at built-in examples is the best way to learn how to use a command. Yes, it can be a bit daunting to scroll through a list of hundreds of commands
 (Exchange Server, for example, adds well over 400 new commands), but using Help
 and Get-Command with wildcards should make it easier to narrow down the list to whatever noun you think you’re after. From there, read the help!
-
-7.9 Lab

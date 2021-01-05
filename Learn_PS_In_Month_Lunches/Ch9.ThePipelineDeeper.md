@@ -437,31 +437,35 @@ asked if these commands will function or not, and why. You’ve been told how
 Get-ADComputer works, and what it produces; you can read the help to discover what other commands expect and accept.
 1 Would the following command work to retrieve a list of installed hotfixes from
 all computers in the specified domain? Why or why not? Write out an explanation, similar to the ones we provided earlier in this chapter.
-Get-Hotfix -computerName (get-adcomputer -filter * |
-Select-Object -expand name)
+Get-Hotfix -computerName (get-adcomputer -filter * | Select-Object -expand name)
+    This should work, because the nested Get-ADComputer expression will return a collection of computer names and the -Computername parameter can accpt an array of values 
+    
 2 Would this alternative command work to retrieve the list of hotfixes from the
 same computers? Why or why not? Write out an explanation, similar to the ones
 we provided earlier in this chapter.
-get-adcomputer -filter * |
-Get-HotFix
+get-adcomputer -filter * | Get-HotFix
+    This won't work, because Get-HotFix doesn't accept any parameters by value. It will acccept -Computername property. This propery can be bond to the Computername parameter in Get-Hotfix because it accepts pipeline binding by property name.
+    
 3 Would this third version of the command work to retrieve the list of hotfixes
 from the domain computers? Why or why not? Write out an explanation, similar to the ones we provided earlier in this chapter.
-Licensed to <pedbro@gmail.com>
-118 CHAPTER 9 The pipeline, deeper
 get-adcomputer -filter * |
-Select-Object @{l='computername';e={$_.name}} |
-Get-Hotfix
-4 Write a command that uses pipeline parameter binding to retrieve a list of running processes from every computer in an Active Directory (AD) domain. Don’t
-use parentheses.
+Select-Object @{l='computername';e={$_.name}} | Get-Hotfix
+    This should work. The first part of the expression is writing a custom object to the popeline that has a omputername property.  This property can be bound to the Computername parameter in Get-Hotfix because it acceots oipeline binding by property name.
+4.Write a command that uses pipeline parameter binding to retrieve a list of running processes from every computer in an Active Directory (AD) domain. Don’t use parentheses.
+    Get-ADComputer -filter * | -> Select-Object @{n='computername';e={$_.name}} | Get-Process
+    
 5 Write a command that retrieves a list of installed services from every computer
 in an AD domain. Don’t use pipeline input; instead use a parenthetical command (a command in parentheses).
+    Get-Service -Computername (get-adcomputer -filter * | Select-Object -expand property name)
+    
+
 6 Sometimes Microsoft forgets to add a pipeline parameter binding to a cmdlet.
 For example, would the following command work to retrieve information from
 every computer in the domain? Write out an explanation, similar to the ones we
-provided earlier in this chapter.
-get-adcomputer -filter * |
- Select-Object @{l='computername';e={$_.name}} |
-Get-WmiObject -class Win32_BIOS
+provided earlier in this chapter.  get-adcomputer -filter * | Select-Object @{l='computername';e={$_.name}} | Get-WmiObject -class Win32_BIOS
+    This will not work. The Computername parameter in Get-WMIObject doesn't take any pipeline binding.
+
+
 9.9 Further exploration
 We find that many students have difficulty embracing this pipeline input concept,
 mainly because it’s so abstract. If you find yourself in that situation, head to MoreLunches.com. Find this book’s cover image or name, and click on it. Scroll to the

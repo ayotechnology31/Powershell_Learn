@@ -389,33 +389,34 @@ and remember to supplement your learning with the companion videos and sample
 solutions at MoreLunches.com. Some of these tasks will draw on skills you’ve learned
 in previous chapters, to refresh your memory and keep you sharp.
 1 Identify a cmdlet that will produce a random number.
-Get-Random 
+    Get-Random 
 
 2 Identify a cmdlet that will display the current date and time.
-Get-Date 
+    Get-Date 
 
 3 What type of object does the cmdlet from task #2 produce? (What is the type
 name of the object produced by the cmdlet?)
+    System-DateTime
 
 4 Using the cmdlet from task #2 and Select-Object, display only the current day
 of the week in a table like the following (caution: the output will right-align, so
 make sure your PowerShell window doesn’t have a horizontal scroll bar):
-DayOfWeek
-
----------
-Monday
+Get-Date | select DayofWeek
 
 5 Identify a cmdlet that will display information about installed hotfixes.
-
+    Get-Hotfix
+    
 6 Using the cmdlet from task #5, display a list of installed hotfixes. Sort the list by
 the installation date, and display only the installation date, the user who
 installed the hotfix, and the hotfix ID. Remember that the column headers
 shown in a command’s default output aren’t necessarily the real property
 names—you’ll need to look up the real property names to be sure.
+    Get-Hotfix | Sort InstalledOn | Select InstalledOn, InstalledBy, HotFixID
 
 7 Repeat task #6, but this time sort the results by the hotfix description, and
 include the description, the hotfix ID, and the installation date. Put the results
 into an HTML file.
+    Get-HotFix | Sort-Description | Select Descriptiopn, InstalledOn, InstalledBy , HotFixID | ConvertTo-Html  -Tile  *HotFix Report* | OutFile HtFixReport.htm
 
 8 Display a list of the 50 newest entries from the Security event log (you can use a
 different log, such as System or Application, if your Security log is empty). Sort
@@ -425,5 +426,6 @@ Put this information into a text file (not an HTML file, but a plain text file).
 may be tempted to use Select-Object and its -first or -last parameters to
 achieve this; don’t. There’s a better way. Also, avoid using Get-WinEvent for
 now; a better cmdlet is available for this particular task.
+    Get-EventLog -LogName System -Newest 50 | Sort TimeGenerated,Index | Select Index, TimeGEnerated, Source | Out-File elogs.txt
 
 
